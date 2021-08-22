@@ -5,6 +5,7 @@
     </div>
     <div v-else-if="gameStatus === GAME_STATUS_FINISHED">
       <h1>ゲームが終了しました。</h1>
+      <p>キー数: {{ keyCount }}</p>
       <p>Enterキーを押してください。</p>
     </div>
     <div v-else>
@@ -18,6 +19,7 @@
 
 <script lang="ts">
 import { ref, computed, onMounted, defineComponent } from 'vue'
+import useTextGenerator from '../composable/use-text-generator'
 import useTimer from '../composable/use-timer'
 
 const GAME_STATUS_INITIAL = 0
@@ -27,26 +29,24 @@ const TIMER_TIME = 10
 
 export default defineComponent({
   setup: () => {
+    const textGenerator = useTextGenerator()
     const timer = useTimer()
 
     const gameStatus = ref(GAME_STATUS_INITIAL)
-    const texts = ref([])
-    const currentIndex = ref(0)
+    const currentText = ref('')
     const currentInput = ref('')
-    const currentText = computed(() => texts.value[currentIndex.value] || null)
+    const keyCount = ref(0)
+
     const currentRemainingText = computed(() => (currentText.value || '').slice(currentInput.value.length))
 
     const start = () => {
       gameStatus.value = GAME_STATUS_RUNNING
+      keyCount.value = 0
       timer.start(TIMER_TIME, () => {
         timeUp()
       })
-      texts.value = [
-        // サンプルデータ.
-        'poppusinanaide',
-        'soratobusakana',
-        'karasuhamassiro',
-      ]
+      textGenerator.reset()
+      currentText.value = textGenerator.generate()
     }
     const reset = () => {
       gameStatus.value = GAME_STATUS_INITIAL
@@ -64,16 +64,12 @@ export default defineComponent({
         case GAME_STATUS_RUNNING:
           if (e.key === currentRemainingText.value.slice(0, 1)) {
             currentInput.value += e.key
+            keyCount.value++
           }
           if (currentRemainingText.value.length === 0) {
             // 現在のテキストの入力完了
             currentInput.value = ''
-            if (currentIndex.value + 1 === texts.value.length) {
-              // ゲーム終了
-              gameStatus.value = GAME_STATUS_FINISHED
-            }
-
-            currentIndex.value++
+            currentText.value = textGenerator.generate()
           }
           break
         case GAME_STATUS_FINISHED:
@@ -96,10 +92,9 @@ export default defineComponent({
 
       // data
       gameStatus,
-      texts,
-      currentIndex,
       currentInput,
       currentText,
+      keyCount,
 
       // computed
       currentRemainingText,
