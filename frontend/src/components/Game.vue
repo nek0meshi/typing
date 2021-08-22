@@ -18,8 +18,9 @@
 </template>
 
 <script lang="ts">
-import { ref, computed, onMounted, defineComponent } from 'vue'
+import { ref, onMounted, defineComponent } from 'vue'
 import useTextGenerator from '../composable/use-text-generator'
+import useTextTyper from '../composable/use-text-typer'
 import useTimer from '../composable/use-timer'
 
 const GAME_STATUS_INITIAL = 0
@@ -30,14 +31,11 @@ const TIMER_TIME = 10
 export default defineComponent({
   setup: () => {
     const textGenerator = useTextGenerator()
+    const textTyper = useTextTyper()
     const timer = useTimer()
 
     const gameStatus = ref(GAME_STATUS_INITIAL)
-    const currentText = ref('')
-    const currentInput = ref('')
     const keyCount = ref(0)
-
-    const currentRemainingText = computed(() => (currentText.value || '').slice(currentInput.value.length))
 
     const start = () => {
       gameStatus.value = GAME_STATUS_RUNNING
@@ -46,7 +44,7 @@ export default defineComponent({
         timeUp()
       })
       textGenerator.reset()
-      currentText.value = textGenerator.generate()
+      textTyper.set(textGenerator.generate())
     }
     const reset = () => {
       gameStatus.value = GAME_STATUS_INITIAL
@@ -62,14 +60,12 @@ export default defineComponent({
           }
           break
         case GAME_STATUS_RUNNING:
-          if (e.key === currentRemainingText.value.slice(0, 1)) {
-            currentInput.value += e.key
+          if (textTyper.type(e.key)) {
             keyCount.value++
           }
-          if (currentRemainingText.value.length === 0) {
+          if (textTyper.remainingText.value.length === 0) {
             // 現在のテキストの入力完了
-            currentInput.value = ''
-            currentText.value = textGenerator.generate()
+            textTyper.set(textGenerator.generate())
           }
           break
         case GAME_STATUS_FINISHED:
@@ -92,12 +88,12 @@ export default defineComponent({
 
       // data
       gameStatus,
-      currentInput,
-      currentText,
+      currentInput: textTyper.input,
+      currentText: textTyper.text,
       keyCount,
 
       // computed
-      currentRemainingText,
+      remainingText: textTyper.remainingText,
       time: timer.currentTimeSeconds,
 
       // methods
