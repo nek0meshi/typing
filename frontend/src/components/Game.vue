@@ -10,6 +10,7 @@
     </div>
     <div v-else>
       <h1>{{ currentText }}</h1>
+      <h2>{{ expectedText }}</h2>
       <p>{{ time }}</p>
 
       <p>{{ currentInput }}</p>
@@ -63,7 +64,7 @@ export default defineComponent({
           if (textTyper.type(e.key)) {
             keyCount.value++
           }
-          if (textTyper.remainingText.value.length === 0) {
+          if (textTyper.isCompleted.value) {
             // 現在のテキストの入力完了
             textTyper.set(textGenerator.generate())
           }
@@ -88,12 +89,12 @@ export default defineComponent({
 
       // data
       gameStatus,
-      currentInput: textTyper.input,
+      currentInput: textTyper.inputText,
       currentText: textTyper.text,
       keyCount,
 
       // computed
-      remainingText: textTyper.remainingText,
+      expectedText: textTyper.expectedText,
       time: timer.currentTimeSeconds,
 
       // methods
