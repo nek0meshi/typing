@@ -11,17 +11,21 @@ export default function useTextTyper() {
   )
   const inputText = computed(() => inputTextArray.value.join('') + inputCurrentLetter.value)
   const inputIndex = computed(() => inputTextArray.value.length)
-  const currentLetterCandidates = computed(() => textAlphabetArray.value[inputIndex.value]
-    .filter((item: string) => item.startsWith(inputCurrentLetter.value))
+  const currentLetterCandidates = computed(
+    () => {
+      return textAlphabetArray.value[inputIndex.value]
+        .filter((item: string) => item.startsWith(inputCurrentLetter.value))
+    }
   )
   const expectedText = computed(() => inputTextArray.value
     .concat(currentLetterCandidates.value[0] || [])
     .concat(textAlphabetArray.value.slice(inputIndex.value + 1).map((item: string[]) => item[0]))
     .join('')
   )
-  const isCompleted = computed(() =>
-    textArray.value.length > 0
-    && inputTextArray.value.length === textArray.value.length
+  const isCompleted = computed(
+    () =>
+      textArray.value.length > 0
+      && inputTextArray.value.length === textArray.value.length
   )
 
   const set = (_text: string) => {
@@ -31,8 +35,23 @@ export default function useTextTyper() {
   }
 
   const type = (key: string) => {
-    if (!currentLetterCandidates.value
-      .find((item: string) => item.startsWith(inputCurrentLetter.value + key))
+    switch (textArray.value[inputIndex.value]) {
+      case 'ん':
+        if (
+          inputCurrentLetter.value === 'n'
+          && key !== 'n'
+          && textAlphabetArray.value.length >= inputIndex.value + 1
+          && !['a', 'i', 'u', 'e', 'o', 'n'].includes(textAlphabetArray.value[inputIndex.value + 1].map((item: string) => item[0]))
+        ) {
+          inputTextArray.value.push(inputCurrentLetter.value)
+          inputCurrentLetter.value = key
+          return true
+        }
+    }
+
+    if (
+      !currentLetterCandidates.value
+        .find((item: string) => item.startsWith(inputCurrentLetter.value + key))
     ) {
       return false
     }
@@ -113,4 +132,33 @@ const LETTER_MAP = {
   'わ': ['wa'],
   'を': ['wo'],
   'ん': ['nn'],
+  'っ': ['ltu', 'ltsu'],
+  'ゃ': ['lya'],
+  'ゅ': ['lyu'],
+  'ょ': ['lyo'],
+  'が': ['ga'],
+  'ぎ': ['gi'],
+  'ぐ': ['gu'],
+  'げ': ['ge'],
+  'ご': ['go'],
+  'ざ': ['za'],
+  'じ': ['zi', 'ji'],
+  'ず': ['zu'],
+  'ぜ': ['ze'],
+  'ぞ': ['zo'],
+  'だ': ['da'],
+  'ぢ': ['di'],
+  'づ': ['du'],
+  'で': ['de'],
+  'ど': ['do'],
+  'ば': ['ba'],
+  'び': ['bi'],
+  'ぶ': ['bu'],
+  'べ': ['be'],
+  'ぼ': ['bo'],
+  'ぱ': ['pa'],
+  'ぴ': ['pi'],
+  'ぷ': ['pu'],
+  'ぺ': ['pe'],
+  'ぽ': ['po'],
 }

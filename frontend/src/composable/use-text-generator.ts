@@ -2,6 +2,9 @@ import { ref, computed } from 'vue'
 
 const DUMMY_TEXTS = [
   // サンプルデータ.
+  'あんこ',
+  'けん',
+  'だんぼう',
   'いぬ',
   'たこ',
   'さる',
@@ -23,6 +26,7 @@ const DUMMY_TEXTS = [
   'ふね',
   'つち',
   // 'あまぐり',
+  // 'ちゃっと',
 
   'hello',
   'apple',
