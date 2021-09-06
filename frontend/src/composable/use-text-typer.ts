@@ -4,18 +4,32 @@ export default function useTextTyper() {
   const text = ref('')
   const inputTextArray = ref<string[]>([])
   const inputCurrentLetter = ref('')
+  const reserved = ref<string[]>([])
 
   const textArray = computed(() => text.value.split(''))
   const textAlphabetArray = computed(() => textArray.value
-    .map((letter) => parse(letter))
+    .map((letter, index) => {
+      switch (letter) {
+        case 'っ':
+          if (textArray.value.length >= index) {
+            // 次の文字の、最初のアルファベット.
+            return [
+              parse(textArray.value[index + 1])[0][0],
+              ...parse(letter)
+            ]
+          }
+      }
+
+      return parse(letter)
+    })
   )
   const inputText = computed(() => inputTextArray.value.join('') + inputCurrentLetter.value)
   const inputIndex = computed(() => inputTextArray.value.length)
   const currentLetterCandidates = computed(
-    () => {
-      return textAlphabetArray.value[inputIndex.value]
+    () => reserved.value.length
+      ? reserved.value
+      : textAlphabetArray.value[inputIndex.value]
         .filter((item: string) => item.startsWith(inputCurrentLetter.value))
-    }
   )
   const expectedText = computed(() => inputTextArray.value
     .concat(currentLetterCandidates.value[0] || [])
@@ -32,6 +46,13 @@ export default function useTextTyper() {
     text.value = _text
     inputTextArray.value = []
     inputCurrentLetter.value = ''
+    reserved.value = []
+  }
+
+  const goNextChar = () => {
+    inputTextArray.value.push(inputCurrentLetter.value)
+    inputCurrentLetter.value = ''
+    reserved.value = []
   }
 
   const type = (key: string) => {
@@ -53,6 +74,20 @@ export default function useTextTyper() {
           inputCurrentLetter.value = key
           return true
         }
+        break
+      case 'っ':
+        if (
+          inputCurrentLetter.value === ''
+          && key !== 'l'
+          && textAlphabetArray.value.length >= inputIndex.value + 1
+          && textAlphabetArray.value[inputIndex.value + 1].map((item: string) => item[0]).includes(key)
+        ) {
+          inputCurrentLetter.value = key
+          goNextChar()
+          reserved.value = textAlphabetArray.value[inputIndex.value].filter((item: string) => item.startsWith(key))
+          return true
+        }
+        break
     }
 
     if (
@@ -65,8 +100,7 @@ export default function useTextTyper() {
     inputCurrentLetter.value += key
 
     if (currentLetterCandidates.value.find((item: string) => item === inputCurrentLetter.value)) {
-      inputTextArray.value.push(inputCurrentLetter.value)
-      inputCurrentLetter.value = ''
+      goNextChar()
     }
 
     return true
