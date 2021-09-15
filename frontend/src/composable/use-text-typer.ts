@@ -6,7 +6,7 @@ export default function useTextTyper() {
   const inputCurrentLetter = ref('')
   const reserved = ref<string[]>([])
 
-  const textArray = computed(() => text.value.split(''))
+  const textArray = computed(() => parseTextArray(text.value))
   const textAlphabetArray = computed(() => textArray.value
     .map((letter, index) => {
       switch (letter) {
@@ -122,7 +122,29 @@ export default function useTextTyper() {
 }
 
 const parse = (letter: string) => {
-  return LETTER_MAP[letter] || [letter]
+  return LETTER_MAP[letter] || TWO_LETTER_MAP[letter] || [letter]
+}
+
+const parseTextArray = (text: string) => {
+  const arr = text.split('')
+
+  const result = []
+  let index = 0
+
+  while (index < arr.length) {
+    if (
+      index < arr.length - 1
+      && Object.keys(TWO_LETTER_MAP).includes(arr[index] + arr[index + 1])
+    ) {
+      result.push(arr[index] + arr[index + 1])
+      index += 2
+    } else {
+      result.push(arr[index])
+      index += 1
+    }
+  }
+
+  return result
 }
 
 const LETTER_MAP = {
@@ -176,6 +198,11 @@ const LETTER_MAP = {
   'ゃ': ['lya'],
   'ゅ': ['lyu'],
   'ょ': ['lyo'],
+  'ぁ': ['la'],
+  'ぃ': ['li'],
+  'ぅ': ['lu'],
+  'ぇ': ['le'],
+  'ぉ': ['lo'],
   'が': ['ga'],
   'ぎ': ['gi'],
   'ぐ': ['gu'],
@@ -201,4 +228,65 @@ const LETTER_MAP = {
   'ぷ': ['pu'],
   'ぺ': ['pe'],
   'ぽ': ['po'],
+  'ー': ['-'],
+}
+
+// 二音
+const TWO_LETTER_MAP = {
+  ...Object.fromEntries(
+    Object.entries({
+      'き': 'k',
+      'ぎ': 'g',
+      'ぢ': 'd',
+      'に': 'n',
+      'ひ': 'h',
+      'び': 'b',
+      'ぴ': 'p',
+      'み': 'm',
+      'り': 'r',
+    })
+      .flatMap(([kana, consonant]: string[]) => [
+        ['ゃ', 'ya'],
+        ['ゅ', 'yu'],
+        ['ょ', 'yo'],
+      ]
+        .map(([kanaYayuyo, alphabetYayuyo]) => [kana + kanaYayuyo, [consonant + alphabetYayuyo]])
+      )
+  ),
+  ...Object.fromEntries(
+    Object.entries({
+      'し': ['sy', 'sh'],
+      'じ': ['zy', 'j'],
+      'ち': ['cy', 'ch', 'ty'],
+      'て': ['th'],
+    })
+      .flatMap(([kana, consonants]) => [
+        ['ゃ', 'a'],
+        ['ゅ', 'u'],
+        ['ょ', 'o'],
+      ]
+        .map(([kanaYayuyo, alphabetAuo]) => [
+          kana + kanaYayuyo,
+          consonants.map((consonant: string) => consonant + alphabetAuo)
+        ])
+      )
+  ),
+  'ふぁ': ['fa'],
+  'ふぃ': ['fi'],
+  'ふぇ': ['fe'],
+  'ふゅ': ['fyu'],
+  'うぃ': ['whi'],
+  'うぇ': ['we', 'whe'],
+  'うぉ': ['who'],
+  'ゔぁ': ['va'],
+  'ゔぃ': ['vi'],
+  'ゔぇ': ['ve'],
+  'ゔぉ': ['vo'],
+  'ちぇ': ['che'],
+  'しぇ': ['she'],
+  'じぇ': ['je'],
+  'てぃ': ['thi'],
+  'でぃ': ['dhi'],
+  'でゅ': ['dhu'],
+  'とぅ': ['twu'],
 }
