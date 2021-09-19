@@ -9,6 +9,7 @@
     </div>
     <div v-else>
       <h1>{{ currentText }}</h1>
+      <p>{{ time }}</p>
 
       <p>{{ currentInput }}</p>
     </div>
@@ -17,13 +18,17 @@
 
 <script lang="ts">
 import { ref, computed, onMounted, defineComponent } from 'vue'
+import useTimer from '../composable/use-timer'
 
 const GAME_STATUS_INITIAL = 0
 const GAME_STATUS_RUNNING = 1
 const GAME_STATUS_FINISHED = 2
+const TIMER_TIME = 10
 
 export default defineComponent({
   setup: () => {
+    const timer = useTimer()
+
     const gameStatus = ref(GAME_STATUS_INITIAL)
     const texts = ref([])
     const currentIndex = ref(0)
@@ -33,6 +38,9 @@ export default defineComponent({
 
     const start = () => {
       gameStatus.value = GAME_STATUS_RUNNING
+      timer.start(TIMER_TIME, () => {
+        timeUp()
+      })
       texts.value = [
         // サンプルデータ.
         'poppusinanaide',
@@ -43,7 +51,9 @@ export default defineComponent({
     const reset = () => {
       gameStatus.value = GAME_STATUS_INITIAL
     }
-
+    const timeUp = () => {
+      gameStatus.value = GAME_STATUS_FINISHED
+    }
     const onKeyInput = (e: KeyboardEvent) => {
       switch (gameStatus.value) {
         case GAME_STATUS_INITIAL:
@@ -93,6 +103,7 @@ export default defineComponent({
 
       // computed
       currentRemainingText,
+      time: timer.currentTimeSeconds,
 
       // methods
       onKeyInput,
