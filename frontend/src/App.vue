@@ -1,15 +1,15 @@
 <template>
-  <Game />
+  <TypingGame />
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import Game from './components/Game.vue'
+import TypingGame from './components/TypingGame.vue'
 
 export default defineComponent({
   name: 'App',
   components: {
-    Game,
+    TypingGame,
   }
 })
 </script>
