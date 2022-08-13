@@ -39,15 +39,17 @@ const DUMMY_TEXTS = [
 export default function useTextGenerator(texts: string[] = DUMMY_TEXTS) {
   const usedIndexes = ref<number[]>([])
 
-  const remainingIndexes = computed(
-    () => [...Array(texts.length).keys()]
-      .filter((i) => !usedIndexes.value.includes(i))
+  const remainingIndexes = computed(() =>
+    [...Array(texts.length).keys()].filter(
+      (i) => !usedIndexes.value.includes(i)
+    )
   )
 
   const generate = () => {
-    const index = remainingIndexes.value[
-      Math.floor(Math.random() * remainingIndexes.value.length)
-    ]
+    const index =
+      remainingIndexes.value[
+        Math.floor(Math.random() * remainingIndexes.value.length)
+      ]
     usedIndexes.value.push(index)
 
     if (remainingIndexes.value.length === 0) {

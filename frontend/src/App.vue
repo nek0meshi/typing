@@ -10,7 +10,7 @@ export default defineComponent({
   name: 'App',
   components: {
     TypingGame,
-  }
+  },
 })
 </script>
 

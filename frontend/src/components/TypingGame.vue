@@ -56,7 +56,7 @@ export default defineComponent({
     const onKeyInput = (e: KeyboardEvent) => {
       switch (gameStatus.value) {
         case GAME_STATUS_INITIAL:
-          if (e.key === "Enter") {
+          if (e.key === 'Enter') {
             start()
           }
           break
@@ -70,7 +70,7 @@ export default defineComponent({
           }
           break
         case GAME_STATUS_FINISHED:
-          if (e.key === "Enter") {
+          if (e.key === 'Enter') {
             reset()
           }
           break
@@ -100,7 +100,7 @@ export default defineComponent({
       // methods
       onKeyInput,
     }
-  }
+  },
 })
 </script>
 
