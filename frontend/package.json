@@ -5,8 +5,12 @@
     "dev": "vite --host 0.0.0.0",
     "build": "vue-tsc --noEmit && vite build",
     "serve": "vite preview",
+    "lint": "npm run eslint && npm run prettier",
+    "lint:fix": "npm run eslint:fix && npm run prettier:fix",
     "eslint": "eslint --ext \".js,.ts,.vue\" .",
-    "eslint:fix": "eslint --ext \".js,.ts,.vue\" --fix ."
+    "eslint:fix": "eslint --ext \".js,.ts,.vue\" --fix .",
+    "prettier": "prettier -c .",
+    "prettier:fix": "prettier -w ."
   },
   "dependencies": {
     "vue": "^3.0.5"
