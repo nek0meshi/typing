@@ -162,7 +162,7 @@ const parseTextArray = (text: string) => {
   return result
 }
 
-const LETTER_MAP = {
+const LETTER_MAP: { [kana: string]: string[] } = {
   あ: ['a'],
   い: ['i'],
   う: ['u'],
@@ -247,7 +247,7 @@ const LETTER_MAP = {
 }
 
 // 二音
-const TWO_LETTER_MAP = {
+const TWO_LETTER_MAP: { [kana: string]: string[] } = {
   ...Object.fromEntries(
     Object.entries({
       き: 'k',
@@ -259,7 +259,7 @@ const TWO_LETTER_MAP = {
       ぴ: 'p',
       み: 'm',
       り: 'r',
-    }).flatMap(([kana, consonant]: string[]) =>
+    }).flatMap(([kana, consonant]) =>
       [
         ['ゃ', 'ya'],
         ['ゅ', 'yu'],

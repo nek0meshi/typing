@@ -15,12 +15,7 @@ export default function useTimer() {
   })
   const currentTimeSeconds = computed(() => Math.ceil(currentTime.value / 1000))
 
-  const start = (
-    _seconds: number,
-    callback: () => {
-      /**/
-    }
-  ) => {
+  const start = (_seconds: number, callback: () => void) => {
     seconds.value = _seconds
     startTime.value = Date.now()
 
