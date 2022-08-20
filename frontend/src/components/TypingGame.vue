@@ -95,7 +95,7 @@ export default defineComponent({
 
       // computed
       expectedText: textTyper.expectedText,
-      time: timer.currentTimeSeconds,
+      time: timer.remainingTimeSeconds,
 
       // methods
       onKeyInput,
