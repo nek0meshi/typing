@@ -8,28 +8,28 @@ const DUMMY_TEXTS = [
   'らっこ',
   'まっと',
   'ほっともっと',
-  'いぬ',
-  'たこ',
-  'さる',
-  'くに',
-  'くつ',
-  'くさ',
-  'まつ',
-  'かめ',
-  'たい',
-  'てこ',
+  'きゃべつ',
+  'にんじゃ',
+  'とうりょう',
+  'ちゃっと',
+  'ぎゅうにゅう',
+  'びみょう',
+  'ちょうじょう',
+  'きゃんでぃ',
+  'ふぁいと',
+  'ふぁっくす',
+  'ふゅーちゃー',
+  'ゔぁいおりん',
+  'ゔぇろしてぃ',
   'とら',
-  // 'ぎゅうにゅう',
-  // 'みつばち',
-  // 'らっこ',
+  'みつばち',
   'こあら',
   'らむね',
   'ねこ',
   'こしあん',
   'ふね',
   'つち',
-  // 'あまぐり',
-  // 'ちゃっと',
+  'あまぐり',
 
   'hello',
   'apple',
@@ -39,15 +39,17 @@ const DUMMY_TEXTS = [
 export default function useTextGenerator(texts: string[] = DUMMY_TEXTS) {
   const usedIndexes = ref<number[]>([])
 
-  const remainingIndexes = computed(
-    () => [...Array(texts.length).keys()]
-      .filter((i) => !usedIndexes.value.includes(i))
+  const remainingIndexes = computed(() =>
+    [...Array(texts.length).keys()].filter(
+      (i) => !usedIndexes.value.includes(i)
+    )
   )
 
   const generate = () => {
-    const index = remainingIndexes.value[
-      Math.floor(Math.random() * remainingIndexes.value.length)
-    ]
+    const index =
+      remainingIndexes.value[
+        Math.floor(Math.random() * remainingIndexes.value.length)
+      ]
     usedIndexes.value.push(index)
 
     if (remainingIndexes.value.length === 0) {

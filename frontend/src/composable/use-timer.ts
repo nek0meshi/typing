@@ -3,27 +3,24 @@ import { ref, computed } from 'vue'
 const INTERVAL_TIME = 10
 
 export default function useTimer() {
-  const startTime = ref(0)
   const intervalId = ref(0)
   const seconds = ref(0)
-  const timerTime = ref(0)
+  const currentTime = ref(0)
 
-  const currentTime = computed(() => {
-    const value = seconds.value * 1000 - (timerTime.value - startTime.value)
-
-    return value >= 0 ? value : 0
-  })
   const currentTimeSeconds = computed(() => Math.ceil(currentTime.value / 1000))
+  const remainingTimeSeconds = computed(
+    () => seconds.value - currentTimeSeconds.value
+  )
 
-  const start = (_seconds: number, callback = () => {}) => {
+  const start = (_seconds: number, callback: () => void) => {
     seconds.value = _seconds
-    startTime.value = Date.now()
 
     intervalId.value = setInterval(() => {
-      timerTime.value = Date.now()
-      if (currentTime.value === 0) {
+      currentTime.value += INTERVAL_TIME
+      if (remainingTimeSeconds.value <= 0) {
         // タイムアップ.
         clearInterval(intervalId.value)
+        currentTime.value = 0
         callback()
       }
     }, INTERVAL_TIME)
@@ -31,8 +28,8 @@ export default function useTimer() {
 
   return {
     seconds,
-    currentTime,
     currentTimeSeconds,
+    remainingTimeSeconds,
     start,
   }
 }

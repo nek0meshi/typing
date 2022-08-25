@@ -19,11 +19,15 @@
 </template>
 
 <script lang="ts">
-import { ref, onMounted, defineComponent } from 'vue'
+import { ref, onMounted, defineComponent, Ref } from 'vue'
 import useTextGenerator from '../composable/use-text-generator'
 import useTextTyper from '../composable/use-text-typer'
 import useTimer from '../composable/use-timer'
 
+type GameStatus =
+  | typeof GAME_STATUS_INITIAL
+  | typeof GAME_STATUS_RUNNING
+  | typeof GAME_STATUS_FINISHED
 const GAME_STATUS_INITIAL = 0
 const GAME_STATUS_RUNNING = 1
 const GAME_STATUS_FINISHED = 2
@@ -35,7 +39,7 @@ export default defineComponent({
     const textTyper = useTextTyper()
     const timer = useTimer()
 
-    const gameStatus = ref(GAME_STATUS_INITIAL)
+    const gameStatus: Ref<GameStatus> = ref(GAME_STATUS_INITIAL)
     const keyCount = ref(0)
 
     const start = () => {
@@ -56,7 +60,7 @@ export default defineComponent({
     const onKeyInput = (e: KeyboardEvent) => {
       switch (gameStatus.value) {
         case GAME_STATUS_INITIAL:
-          if (e.key === "Enter") {
+          if (e.key === 'Enter') {
             start()
           }
           break
@@ -70,7 +74,7 @@ export default defineComponent({
           }
           break
         case GAME_STATUS_FINISHED:
-          if (e.key === "Enter") {
+          if (e.key === 'Enter') {
             reset()
           }
           break
@@ -95,12 +99,12 @@ export default defineComponent({
 
       // computed
       expectedText: textTyper.expectedText,
-      time: timer.currentTimeSeconds,
+      time: timer.remainingTimeSeconds,
 
       // methods
       onKeyInput,
     }
-  }
+  },
 })
 </script>
 
