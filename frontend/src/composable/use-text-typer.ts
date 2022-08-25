@@ -1,9 +1,28 @@
 import { ref, computed } from 'vue'
 
 export default function useTextTyper() {
+  /**
+   * 入力対象のテキスト
+   * 例: いたち
+   */
   const text = ref('')
+
+  /**
+   * 入力済みのかなの配列
+   * 例: ['i', 'ta', 'chi']
+   */
   const inputTextArray = ref<string[]>([])
+
+  /**
+   * 入力中のかなの要素
+   * 例: 入力対象のかな = chi, inputCurrentLetter = 'ch'
+   */
   const inputCurrentLetter = ref('')
+
+  /**
+   * 次の入力値が制限される場合の候補.
+   * 今のところ、「っ」に関連して利用される.
+   */
   const reserved = ref<string[]>([])
 
   const textArray = computed(() => parseTextArray(text.value))
@@ -31,6 +50,10 @@ export default function useTextTyper() {
           item.startsWith(inputCurrentLetter.value)
         )
   )
+
+  /**
+   * 現在想定される、現在まで〜今後入力される文字列
+   */
   const expectedText = computed(() =>
     inputTextArray.value
       .concat(currentLetterCandidates.value[0] || [])
@@ -41,12 +64,19 @@ export default function useTextTyper() {
       )
       .join('')
   )
+
+  /**
+   * typingが完了したかどうか
+   */
   const isCompleted = computed(
     () =>
       textArray.value.length > 0 &&
       inputTextArray.value.length === textArray.value.length
   )
 
+  /**
+   * 入力対象の文字列を登録する.
+   */
   const set = (_text: string) => {
     text.value = _text
     inputTextArray.value = []
@@ -54,12 +84,18 @@ export default function useTextTyper() {
     reserved.value = []
   }
 
+  /**
+   * 入力中のかなを登録し、次のかな入力状態に移行する
+   */
   const goNextChar = () => {
     inputTextArray.value.push(inputCurrentLetter.value)
     inputCurrentLetter.value = ''
     reserved.value = []
   }
 
+  /**
+   * 文字列入力を受け付ける.
+   */
   const type = (key: string) => {
     switch (textArray.value[inputIndex.value]) {
       case 'ん':
@@ -136,10 +172,18 @@ export default function useTextTyper() {
   }
 }
 
+/**
+ * かなを対応する入力候補に変換する
+ * 例: ち -> ['ti', 'chi']
+ */
 const parse = (letter: string) => {
   return LETTER_MAP[letter] || TWO_LETTER_MAP[letter] || [letter]
 }
 
+/**
+ * かな文字列をかなの配列に変換する
+ * 例: しょっぷ -> ['しょ', 'っ', 'ぷ']
+ */
 const parseTextArray = (text: string) => {
   const arr = text.split('')
 
